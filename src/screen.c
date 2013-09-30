@@ -3,7 +3,6 @@
 unsigned char *videoPtr;
 int csr_x = 0, csr_y = 0, curr_line = 0;
 
-
 void k_cls(void)
 {
 	int i;
@@ -48,6 +47,7 @@ void k_printf(char *message, unsigned int mode)
 			curr_line++;
 			i = (curr_line*80*2);
 			*message++;
+			csr_y++;
 		}
 		else
 		{
@@ -56,9 +56,15 @@ void k_printf(char *message, unsigned int mode)
 			i++;
 			videoPtr[i] = mode;
 			i++;
+
+			csr_x++;
+			update_cursor(csr_y, csr_x);
+			
 		}
 	}
-	curr_line++;	
+	curr_line++;
+	csr_y++;
+	csr_x = 0;
 }
 
 signed int k_printhex(unsigned int hexvalue, unsigned int mode)
@@ -122,6 +128,17 @@ char k_printdec(unsigned int value, unsigned int mode)
 	k_printf(chrb, mode);
 	return chrb;
 }
+
+void update_cursor(int row, int col)
+{
+        unsigned short position=(row*80) + col;
+
+	outb(0x3D4, 0x0F);
+	outb(0x3D5, (unsigned char)(position&0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (unsigned char )((position>>8)&0xFF));
+}
+
 void init_video(void)
 {
 	videoPtr = (unsigned char *)0xB8000;
