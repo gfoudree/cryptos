@@ -2,3 +2,6 @@
 *.o
 *.iso
 *~*
+com1.out
+none
+bochs.core

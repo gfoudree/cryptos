@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 echo "building..."
 
 rm *.iso
@@ -9,4 +9,4 @@ cd ..
 cp src/kernel.bin isodir/boot/kernel.bin
 grub-mkrescue -o os.iso isodir
 #qemu -cdrom os.iso
-bochs -f bochs.bxrc
+bochs -f bochs.bxrc -q

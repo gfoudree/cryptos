@@ -39,3 +39,13 @@ char recvByte(int serialPort)
 	}
 	return inb(serialPort);
 }
+
+//Warning: this function is blocking until len# chars are read!
+void recvStr(int serialPort, char *str, const int len)
+{
+	int i;
+	for (i = 0; i < len; i++)
+	{
+		str[i] = recvByte(serialPort);
+	}
+}

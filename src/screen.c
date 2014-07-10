@@ -1,4 +1,6 @@
 #include <screen.h>
+#include <sysctl.h>
+#include <serial.h>
 
 unsigned char *videoPtr;
 int csr_x = 0, csr_y = 0, curr_line = 0;
@@ -38,6 +40,14 @@ unsigned int k_printfEx(char *message, unsigned int line, unsigned int mode)
 
 void k_printf(char *message, unsigned int mode)
 {
+	//Check for serial debugging
+        extern int *p_sysctl;
+        if (p_sysctl[COM_DEBUG] > 0)
+        {
+                sendStr(COM1, message);
+		sendByte(COM1, 10);
+        }
+
 	unsigned int i = 0;
 	i = (curr_line*80*2);
 	while (*message != 0)

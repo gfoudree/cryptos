@@ -7,3 +7,4 @@ void init_serial(int serialPort);
 void sendByte(int serialPort, unsigned char b);
 void sendStr(int serialPort, char *str);
 char recvByte(int serialPort);
+void recvStr(int serialPort, char *str, const int len);

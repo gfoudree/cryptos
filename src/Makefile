@@ -1,14 +1,14 @@
-CC = gcc
-CFLAGS = -O -ffreestanding -fstrength-reduce -fomit-frame-pointer -nostdinc -fno-builtin -nostdlib -m32 -I ../include -fno-strict-aliasing -fno-common -fno-stack-protector
+CC = gcc46
+CFLAGS = -O -g -ffreestanding -fstrength-reduce -fomit-frame-pointer -nostdinc -fno-builtin -nostdlib -m32 -I ../include -fno-strict-aliasing -fno-common -fno-stack-protector
 ASM = nasm 
 ASMFLAGS = -f elf
 LD = ld
-LDFLAGS = -T link.ld -melf_i386
+LDFLAGS = -T link.ld -melf_i386_fbsd
 
 all: kernel.bin
 
-kernel.bin : loader.o main.o screen.o ioports.o gdt.o
-	$(LD) $(LDFLAGS) loader.o main.o screen.o ioports.o gdt.o -o kernel.bin
+kernel.bin : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o
+	$(LD) $(LDFLAGS) loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o -o kernel.bin
 
 loader.o : loader.asm
 	$(ASM) $(ASMFLAGS) loader.asm -o loader.o
@@ -24,6 +24,16 @@ ioports.o : ioports.c
 
 gdt.o : gdt.c
 	$(CC) $(CFLAGS) gdt.c -c -o gdt.o
+
+serial.o : serial.c
+	$(CC) $(CFLAGS) serial.c -c -o serial.o
+
+libc.o : libc.c
+	$(CC) $(CFLAGS) libc.c -c -o libc.o
+
+sysctl.o : sysctl.c
+	$(CC) $(CFLAGS) sysctl.c -c -o sysctl.o
+
 clean:
 	rm *.o
 	rm *.bin
