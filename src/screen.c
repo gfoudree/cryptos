@@ -45,7 +45,7 @@ void k_printf(char *message, unsigned int mode)
         if (p_sysctl[COM_DEBUG] > 0)
         {
                 sendStr(COM1, message);
-		sendByte(COM1, 10);
+				sendByte(COM1, 10);
         }
 
 	unsigned int i = 0;

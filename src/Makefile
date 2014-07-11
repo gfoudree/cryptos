@@ -7,8 +7,8 @@ LDFLAGS = -T link.ld -melf_i386_fbsd
 
 all: kernel.bin
 
-kernel.bin : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o
-	$(LD) $(LDFLAGS) loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o -o kernel.bin
+kernel.bin : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o
+	$(LD) $(LDFLAGS) loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o irq.o idt.o isrs.o keyboard.o -o kernel.bin
 
 loader.o : loader.asm
 	$(ASM) $(ASMFLAGS) loader.asm -o loader.o
@@ -33,6 +33,18 @@ libc.o : libc.c
 
 sysctl.o : sysctl.c
 	$(CC) $(CFLAGS) sysctl.c -c -o sysctl.o
+	
+idt.o : idt.c
+	$(CC) $(CFLAGS) idt.c -c -o idt.o
+	
+irq.o : irq.c
+	$(CC) $(CFLAGS) irq.c -c -o irq.o
+
+isrs.o : isrs.c
+	$(CC) $(CFLAGS) isrs.c -c -o isrs.o
+
+keyboard.o : keyboard.c
+	$(CC) $(CFLAGS) keyboard.c -c -o keyboard.o
 
 clean:
 	rm *.o
