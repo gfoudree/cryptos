@@ -1,5 +1,10 @@
 #include <irq.h>
 #include <ioports.h>
+#include <keyboard.h>
+
+typedef int bool;
+#define TRUE 1
+#define FALSE 0
 
 unsigned char kbdus[128] =
 {
@@ -56,21 +61,69 @@ void keyboard_handler(struct regs *r)
 	}
 }
 
-void disable_keyboard(void)
+void keyboard_send_cmd(int cmd)
 {
-	int data = inb(0x61);
-	outb(0x61, data | 0x80);
+	while(1) //Wait for keyboard buffer to be clear
+	{
+		if ((keyboard_getstatus() & KEYBD_STATUS_INBUF) == 0)
+			break;
+	}
+	outb(KEYBD_CTRL_OUTCMD, cmd);
 }
 
-void enable_keyboard(void)
+void keyboard_encoder_send_cmd(int cmd)
 {
-	int data = inb(0x61);
-	outb(0x61, data & 0x7F);
+	while(1)
+	{
+		if ((keyboard_getstatus() & KEYBD_STATUS_INBUF) == 0)
+			break;
+	}
+	outb(KEYBD_ENC_OUTCMD, cmd);
+}
+
+int keyboard_encoder_read_buf()
+{
+	return inb(KEYBD_ENC_INBUF);
+}
+
+int keyboard_getstatus(void)
+{
+		return inb(KEYBD_CTRL_STATUS);
+}
+
+void keyboard_setleds(bool scrollLock, bool capsLock, bool numLock)
+{
+	int data = 0;
+	if (scrollLock)
+		data |= 1 << 0;
+	if(numLock)
+		data |= 1 << 1;
+	if (capsLock)
+		data |= 1 << 2;
+	
+	keyboard_encoder_send_cmd(KEYBD_CMD_SETLED);
+	keyboard_encoder_send_cmd(data);
+}
+
+bool keyboard_self_test()
+{
+	keyboard_send_cmd(KEYBD_CMD_SELFTEST);
+	while(1)
+		if (keyboard_getstatus() & KEYBD_STATUS_OUTBUF)
+			break;
+	if (keyboard_encoder_read_buf() == 0x55)
+		return TRUE;
+	else
+		return FALSE;
+}
+	
+void reboot_computer()
+{
+	keyboard_encoder_send_cmd(0xFE);
 }
 
 void keyboard_install(void)
 {
-	outb(0x60, 0xFF);
-	outb(0x60, 0xF4);
+	keyboard_setleds(FALSE, FALSE, TRUE);
 	irq_install_handler(1, &keyboard_handler);
 }

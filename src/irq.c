@@ -1,4 +1,5 @@
 #include <irq.h>
+#include <screen.h>
 
 extern void _irq0(void);
 extern void _irq1(void);
@@ -70,6 +71,7 @@ void irq_install(void)
 
 void irq_handler(struct regs *r)
 {
+	k_printf("IRQ handler called", 0x7);
 	void (*handler)(struct regs *r);
 
 	handler = irq_routines[r->int_no - 32];
