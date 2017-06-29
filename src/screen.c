@@ -69,7 +69,7 @@ void k_printf(char *message, unsigned int mode)
 
 			csr_x++;
 			update_cursor(csr_y, csr_x);
-			
+
 		}
 	}
 	curr_line++;
@@ -152,4 +152,5 @@ void update_cursor(int row, int col)
 void init_video(void)
 {
 	videoPtr = (unsigned char *)0xB8000;
+	k_cls();
 }

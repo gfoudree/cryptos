@@ -20,7 +20,7 @@ mboot:
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM
-    
+
     dd mboot
     dd code
     dd bss
@@ -43,7 +43,7 @@ gdt_flush:
 	mov gs, ax
 	mov ss, ax
 	ret
-	
+
 global idt_load
 extern idtp
 idt_load:
@@ -86,7 +86,7 @@ global _isr31
 ; 0: Divide by zero exception
 _isr0:
 	cli
-	push byte 0	
+	push byte 0
 	push byte 0
 	jmp isr_common_stub
 
@@ -113,7 +113,7 @@ _isr3:
 
 ; 4: Into detected overflow exception
 _isr4:
-	cli 
+	cli
 	push byte 0
 	push byte 4
 	jmp isr_common_stub
@@ -488,5 +488,5 @@ irq_common_stub:
 
 
 SECTION .bss
-    resb 8192               
+    resb 16384
 _sys_stack:
