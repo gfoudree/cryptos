@@ -55,7 +55,10 @@ void k_printf(const char *message, unsigned int mode)
 	{
 		if (*message == '\n')
 		{
-			curr_line++;
+			curr_line = (curr_line + 1) % 25;
+			if (curr_line == 0) {
+				k_cls();
+			}
 			i = (curr_line*80*2);
 			*message++;
 			csr_y++;
@@ -73,7 +76,10 @@ void k_printf(const char *message, unsigned int mode)
 
 		}
 	}
-	curr_line++;
+	curr_line = (curr_line + 1) % 25;
+	if (curr_line == 0) {
+		k_cls();
+	}
 	csr_y++;
 	csr_x = 0;
 }

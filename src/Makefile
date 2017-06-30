@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include 
+CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include
 ASM = nasm
 ASMFLAGS = -f elf
 LD = ld
