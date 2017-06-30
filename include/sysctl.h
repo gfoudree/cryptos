@@ -5,5 +5,6 @@
 #define COM_DEBUG 1
 
 void sysctl(const int param, const int value);
+int *init_sysctl();
 
 #endif

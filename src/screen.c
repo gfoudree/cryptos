@@ -1,6 +1,7 @@
 #include <screen.h>
 #include <sysctl.h>
 #include <serial.h>
+#include <ioports.h>
 
 unsigned char *videoPtr;
 int csr_x = 0, csr_y = 0, curr_line = 0;
@@ -14,7 +15,7 @@ void k_cls(void)
 	}
 }
 
-unsigned int k_printfEx(char *message, unsigned int line, unsigned int mode)
+unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode)
 {
 	unsigned int i = 0;
 	i = (line*80*2);
@@ -38,14 +39,14 @@ unsigned int k_printfEx(char *message, unsigned int line, unsigned int mode)
 	return 1;
 }
 
-void k_printf(char *message, unsigned int mode)
+void k_printf(const char *message, unsigned int mode)
 {
 	//Check for serial debugging
         extern int *p_sysctl;
         if (p_sysctl[COM_DEBUG] > 0)
         {
                 sendStr(COM1, message);
-				sendByte(COM1, 10);
+								sendByte(COM1, 10);
         }
 
 	unsigned int i = 0;
@@ -76,7 +77,7 @@ void k_printf(char *message, unsigned int mode)
 	csr_y++;
 	csr_x = 0;
 }
-
+/*
 signed int k_printhex(unsigned int hexvalue, unsigned int mode)
 {
 	signed int hextemp;
@@ -108,12 +109,12 @@ signed int k_printhex(unsigned int hexvalue, unsigned int mode)
 	}
 	else
 	{
-		k_printf(hextemp+'0', mode);
+		k_printf((char)hextemp+'0', mode);
 	}
 	return hextemp;
 }
-
-char k_printdec(unsigned int value, unsigned int mode)
+*/
+void k_printdec(unsigned int value, unsigned int mode)
 {
 	unsigned int temp = value;
 	int i = 0, j = 0;
@@ -121,7 +122,6 @@ char k_printdec(unsigned int value, unsigned int mode)
 	if (value == 0)
 	{
 		k_printf("0", mode);
-		return;
 	}
 	while (temp > 0)
 	{
@@ -136,12 +136,11 @@ char k_printdec(unsigned int value, unsigned int mode)
 		chrb[i--] = chra[j++];
 	}
 	k_printf(chrb, mode);
-	return chrb;
 }
 
 void update_cursor(int row, int col)
 {
-        unsigned short position=(row*80) + col;
+  unsigned short position=(row*80) + col;
 
 	outb(0x3D4, 0x0F);
 	outb(0x3D5, (unsigned char)(position&0xFF));

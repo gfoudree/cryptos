@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -O0 -g -ffreestanding -fstrength-reduce -fomit-frame-pointer -nostdinc -fno-builtin -nostdlib -m32 -I ../include -fno-strict-aliasing -fno-common -fno-stack-protector
+CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include 
 ASM = nasm
 ASMFLAGS = -f elf
 LD = ld
-LDFLAGS = -T link.ld -m32 -nostdlib -nostdinc
+LDFLAGS = -T link.ld -nostdlib -nostdinc
 
 all: kernel.bin
 
@@ -47,5 +47,6 @@ keyboard.o : keyboard.c
 	$(CC) $(CFLAGS) keyboard.c -c -o keyboard.o
 
 clean:
-	rm *.o
-	rm *.bin
+	rm -f *.o
+	rm -f *.bin
+	rm -f *.elf

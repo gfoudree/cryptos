@@ -1,5 +1,7 @@
 #include <irq.h>
 #include <screen.h>
+#include <idt.h>
+#include <ioports.h>
 
 extern void _irq0(void);
 extern void _irq1(void);
@@ -18,7 +20,7 @@ extern void _irq13(void);
 extern void _irq14(void);
 extern void _irq15(void);
 
-void *irq_routines[16] = 
+void *irq_routines[16] =
 {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0
@@ -37,7 +39,7 @@ void irq_uninstall_handler(int irq)
 void irq_remap(void)
 {
 	outb(0x20, 0x11);
-	outb(0xA0, 0x11);	
+	outb(0xA0, 0x11);
 	outb(0x21, 0x20);
 	outb(0xA1, 0x28);
 	outb(0x21, 0x04);

@@ -1,5 +1,7 @@
 #include <idt.h>
 #include <irq.h>
+#include <isrs.h>
+#include <screen.h>
 
 extern void _isr0(void);
 extern void _isr1(void);

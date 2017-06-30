@@ -1,12 +1,10 @@
 #!/bin/sh
+#Requires the docker image is built. If not, type
+#docker build -t devenv .
+
 echo "building..."
 
-rm *.iso
-cd src
-make clean
-make
-cd ..
-cp src/kernel.bin isodir/boot/kernel.bin
-grub-mkrescue -o os.iso isodir
-#qemu -cdrom os.iso
-bochs -f bochs.bxrc -q &
+docker run --rm -v "$PWD":/tmp/myos -w /tmp/myos devenv bash -c 'make clean;make'
+
+qemu-system-i386 -kernel src/kernel.bin -serial file:com1.out
+#bochs -f bochs.bxrc -q &

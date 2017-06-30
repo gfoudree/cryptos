@@ -22,7 +22,7 @@ void sendByte(int serialPort, unsigned char b)
 	outb(serialPort, b);
 }
 
-void sendStr(int serialPort, char *str)
+void sendStr(int serialPort, const char *str)
 {
 	int i;
 	for (i = 0; i < strlen(str); i++)
