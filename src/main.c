@@ -14,7 +14,7 @@ char getScancode()
 {
 	char c = 0;
 	do {
-		if (inb(0x60) ! = c)
+		if (inb(0x60) != c)
 		{
 			c = inb(0x60);
 			if(c > 0)
@@ -42,6 +42,7 @@ void _kmain()
 
 	sysctl(COM_DEBUG, 1);
 
+
 	k_printf("Cryptos ver. 0.02", 0x7);
 	k_printf("Initializing video... done", 0x7);
   k_printf("Initializing COM1... done", 0x7);
@@ -55,7 +56,7 @@ void _kmain()
 		c[0] = kbdus[getScancode()];
 		k_printf(c, 0x07);
 	}
-	k_printf("DOne!", 0x07);
+	k_printf("Done!", 0x07);
 
 
 	for (;;) {
