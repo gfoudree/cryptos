@@ -11,7 +11,7 @@ CHECKSUM equ -(MAGIC + FLAGS)
 
 
 start:
-    mov esp, _sys_stack
+    mov esp, _sys_stack ;Setup stack pointer
     jmp stublet
 
 ALIGN 4
@@ -30,17 +30,20 @@ stublet:
     call _kmain
     jmp $
 
-
 gdt_flush:
-	mov eax, [esp+4]
+	mov eax, [esp+4] ;Get param on stack
 	lgdt [eax]
+  jmp 0x08:reload_segments ;Can't set CS directly, let's do it with a jmp!
 
-	mov ax, 0x10
-	mov ds, ax
+reload_segments:
+  ;0x10 points to the new data selector
+	mov ax, 0x10 ;0x10 = 0b10000 = index 2 (data), gdt = 0, priv = 0
+	mov ds, ax ;Setup segment registers with our new GDT entries
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+
 	ret
 
 global idt_load
