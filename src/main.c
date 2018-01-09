@@ -31,8 +31,16 @@ static void sys_int(void) {
 	k_printf("OS called!", 0x07);
 }
 
+static void *setup_heap(void) { //Heap ptr is passed in EAX register
+	unsigned long ptr;
+	__asm__ volatile("movl %0, %%eax" : "=r"(ptr) : :);
+	return (void*)ptr;
+}
+
 void _kmain()
 {
+	void *heap_ptr;
+	heap_ptr = setup_heap();
 	init_gdt();
 	idt_install();
 	isrs_install();

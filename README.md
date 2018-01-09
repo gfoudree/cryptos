@@ -18,3 +18,7 @@ Then run
 
 ## Notes:
 Old code is in a different branch. The master branch is a rewrite of the OS.
+
+Sources for this project include
+  - http://wiki.osedev.org
+  - https://www.gitbook.com/book/0xax/linux-insides/details

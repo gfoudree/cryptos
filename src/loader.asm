@@ -9,14 +9,8 @@ FLAGS    equ ALIN | MEMINFO
 MAGIC    equ 0x1BADB002
 CHECKSUM equ -(MAGIC + FLAGS)
 
-
-start:
-    mov esp, _sys_stack ;Setup stack pointer
-    jmp stublet
-
 ALIGN 4
 section .multiboot
-
     dd MAGIC
     dd FLAGS
     dd CHECKSUM
@@ -26,9 +20,15 @@ section .multiboot
     dd end
     dd start
 
-stublet:
-    call _kmain
-    jmp $
+section .text
+
+start:
+  mov esp, _sys_stack ;Setup 16k stack pointer
+  mov eax, end
+  add eax, 512 ;Pass heap pointer in eax, heap = end + 512
+
+  call _kmain
+  jmp $
 
 gdt_flush:
 	mov eax, [esp+4] ;Get param on stack
@@ -49,8 +49,8 @@ reload_segments:
 global idt_load
 extern idtp
 idt_load:
-     lidt [idtp]
-     ret
+  lidt [idtp]
+  ret
 
 global _isr0
 global _isr1
@@ -489,6 +489,6 @@ irq_common_stub:
 	iret
 
 
-SECTION .bss
+section .bss
     resb 16384
 _sys_stack:
