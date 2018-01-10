@@ -112,8 +112,8 @@ void fault_handler(struct regs *r)
 {
 	if (r->int_no < 32)
 	{
-		k_printf(exception_messages[r->int_no], 0x0F);
-		k_printf("Exception occured, halting system!", 0x0F);
+		k_printf(exception_messages[r->int_no]);
+		k_printf("Exception occured, halting system!");
 		for (;;);
 	}
 }

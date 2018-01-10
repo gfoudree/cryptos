@@ -25,11 +25,11 @@ char getScancode()
 }
 
 static void keyboard_handler(struct regs *r) {
-	k_printf("Gotta key bby!", 0x07);
+	k_printf("Gotta key bby!");
 }
 
 static void sys_int(void) {
-	k_printf("OS called!", 0x07);
+	k_printf("OS called!");
 }
 
 static void *setup_heap(void) { //Heap ptr is passed in EAX register
@@ -58,9 +58,9 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic)
 
 	idt_set_gate(0x80, (unsigned long int)&sys_int, 0x8, 0x8e); //Setup sys_int handler (int 0x80)
 
-	k_printf("Cryptos ver. 0.02", 0x7);
-	k_printf("Initializing video... done", 0x7);
- 	k_printf("Initializing COM1... done", 0x7);
+	k_printf("Cryptos ver. 0.02");
+	k_printf("Initializing video... done");
+ 	k_printf("Initializing COM1... done");
 
 	sendStr(COM1, "COM1 Port Initialized!");
 
@@ -68,13 +68,13 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic)
 	while (mmap < mbt->mmap_addr + mbt->mmap_length) {
 		switch (mmap->type) {
 			case 1:
-				k_printf("Available", 0x7);
+				k_printf("Available");
 				break;
 			case 2:
-				k_printf("Reserved", 0x7);
+				k_printf("Reserved");
 				break;
 			case 3:
-				k_printf("ACPI Reserved", 0x7);
+				k_printf("ACPI Reserved");
 				break;
 		}
 		mmap = (multiboot_memory_map_t*)((unsigned int)mmap + mmap->size + sizeof(mmap->size));

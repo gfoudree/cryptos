@@ -59,3 +59,15 @@ unsigned short *memsetw(unsigned short *dest, unsigned short val, int count)
              *temp++ = val;
   return dest;
 }
+
+int memcmp(const void *dest, const void *src, unsigned int size) {
+	const unsigned char* a = (const unsigned char*) dest;
+	const unsigned char* b = (const unsigned char*) src;
+	for (unsigned int i = 0; i < size; i++) {
+		if (a[i] < b[i])
+			return -1;
+		else if (b[i] < a[i])
+			return 1;
+	}
+	return 0;
+}

@@ -1,14 +1,6 @@
 #define COLUMNS 80
 #define LINES 24
 
-void scroll(unsigned int mode);
-void move_csr(void);
-void k_cls(void);
-unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode);
-void k_printf(const char *message, unsigned int mode);
-void init_video(void);
-void update_cursor(int row, int col);
-
 enum screenColors {
 	black = 0x0,
 	blue = 0x1,
@@ -27,3 +19,22 @@ enum screenColors {
 	yellow = 0xE,
 	white = 0xF,
 };
+
+typedef struct tty {
+	unsigned char *videoPtr;
+	unsigned int csr_x;
+	unsigned int csr_y;
+	unsigned int curr_line;
+	unsigned int curr_color;
+} tty_t;
+
+void scroll(unsigned int mode);
+void move_csr(void);
+void k_cls(void);
+unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode);
+void k_printf(const char *message);
+void init_video(void);
+void update_cursor(int row, int col);
+void tty_set_color(unsigned int color);
+
+static tty_t tty;
