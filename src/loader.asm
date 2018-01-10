@@ -24,6 +24,7 @@ section .text
 
 start:
   mov esp, _sys_stack ;Setup 16k stack pointer
+  push ebx ;Push multiboot header
   mov eax, end
   add eax, 512 ;Pass heap pointer in eax, heap = end + 512
 

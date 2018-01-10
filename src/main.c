@@ -7,6 +7,7 @@
 #include <irq.h>
 #include <isrs.h>
 #include <keyboard.h>
+#include <multiboot.h>
 
 int *p_sysctl;
 
@@ -37,7 +38,7 @@ static void *setup_heap(void) { //Heap ptr is passed in EAX register
 	return (void*)ptr;
 }
 
-void _kmain()
+void _kmain(multiboot_info_t* mbt, unsigned int magic)
 {
 	void *heap_ptr;
 	heap_ptr = setup_heap();
@@ -59,10 +60,26 @@ void _kmain()
 
 	k_printf("Cryptos ver. 0.02", 0x7);
 	k_printf("Initializing video... done", 0x7);
-  k_printf("Initializing COM1... done", 0x7);
+ 	k_printf("Initializing COM1... done", 0x7);
 
 	sendStr(COM1, "COM1 Port Initialized!");
-	__asm__("int $0x80");
+
+	multiboot_memory_map_t *mmap = (multiboot_memory_map_t*)mbt->mmap_addr;
+	while (mmap < mbt->mmap_addr + mbt->mmap_length) {
+		switch (mmap->type) {
+			case 1:
+				k_printf("Available", 0x7);
+				break;
+			case 2:
+				k_printf("Reserved", 0x7);
+				break;
+			case 3:
+				k_printf("ACPI Reserved", 0x7);
+				break;
+		}
+		mmap = (multiboot_memory_map_t*)((unsigned int)mmap + mmap->size + sizeof(mmap->size));
+	}
+
 	/*
 	int i;
 	for (i = 0; i < 100; i++) {

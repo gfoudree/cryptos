@@ -6,6 +6,10 @@ echo "building..."
 
 rm -f src/kernel.bin
 sudo docker run --rm -v "$PWD":/tmp/myos -w /tmp/myos devenv make
-
-qemu-system-i386 -kernel src/kernel.bin -serial file:com1.out -m 4096
+if [[ "$1" == "debug" ]]
+then
+	qemu-system-i386 -kernel src/kernel.bin -serial file:com1.out -m 4096 -s -S
+else
+	qemu-system-i386 -kernel src/kernel.bin -serial file:com1.out -m 4096
+fi
 #bochs -f bochs.bxrc -q &
