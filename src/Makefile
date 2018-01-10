@@ -1,50 +1,20 @@
 CC = gcc
-CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include
+CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include -Wall -Wno-pointer-sign -Wno-unused-variable -Wno-unused-function
 ASM = nasm
 ASMFLAGS = -f elf
-LD = ld
 LDFLAGS = -T link.ld -nostdlib -nostdinc
+TARGET = kernel.bin
 
-all: kernel.bin
+all : $(TARGET)
 
-kernel.bin : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o
-	$(CC) $(LDFLAGS) loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o irq.o idt.o isrs.o -o kernel.bin
+%.o : %.c
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 loader.o : loader.asm
-	$(ASM) $(ASMFLAGS) loader.asm -o loader.o
+	$(ASM) $(ASMFLAGS) -o $@ $^
 
-main.o : main.c
-	$(CC) $(CFLAGS) main.c -c -o main.o
-
-screen.o : screen.c
-	$(CC) $(CFLAGS) screen.c -c -o screen.o
-
-ioports.o : ioports.c
-	$(CC) $(CFLAGS) ioports.c -c -o ioports.o
-
-gdt.o : gdt.c
-	$(CC) $(CFLAGS) gdt.c -c -o gdt.o
-
-serial.o : serial.c
-	$(CC) $(CFLAGS) serial.c -c -o serial.o
-
-libc.o : libc.c
-	$(CC) $(CFLAGS) libc.c -c -o libc.o
-
-sysctl.o : sysctl.c
-	$(CC) $(CFLAGS) sysctl.c -c -o sysctl.o
-
-idt.o : idt.c
-	$(CC) $(CFLAGS) idt.c -c -o idt.o
-
-irq.o : irq.c
-	$(CC) $(CFLAGS) irq.c -c -o irq.o
-
-isrs.o : isrs.c
-	$(CC) $(CFLAGS) isrs.c -c -o isrs.o
-
-keyboard.o : keyboard.c
-	$(CC) $(CFLAGS) keyboard.c -c -o keyboard.o
+$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o
+	$(CC) $(LDFLAGS) $^ -o $(TARGET)
 
 clean:
 	rm -f *.o

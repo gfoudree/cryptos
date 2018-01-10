@@ -1,6 +1,10 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
+typedef int bool;
+#define TRUE 1
+#define FALSE 0
+
 const unsigned char kbdus[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
