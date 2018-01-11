@@ -24,7 +24,7 @@ char getScancode() {
 }
 
 static void sys_int(void) {
-    k_printf("OS called!");
+    printk("OS called!");
 }
 
 static void *setup_heap(void) { //Heap ptr is passed in EAX register
@@ -47,15 +47,16 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     init_serial(COM1);
     p_sysctl  = init_sysctl();
 
+    init_syscalls();
     asm volatile("sti"); //Enable interrupts
 
     sysctl(COM_DEBUG, 1);
 
-    idt_set_gate(0x80, (unsigned long int)&sys_int, 0x8, 0x8e); //Setup sys_int handler (int 0x80)
+    //idt_set_gate(0x80, (unsigned long int)&sys_int, 0x8, 0x8e); //Setup sys_int handler (int 0x80)
 
-    k_printf("Cryptos ver. 0.02\n");
-    k_printf("Initializing video... done\n");
-    k_printf("Initializing COM1... done\n");
+    printk("Cryptos ver. 0.03\n");
+    printk("Initializing Video... done\n");
+    printk("Initializing COM1... done\n");
 
     sendStr(COM1, "COM1 Port Initialized!\n");
 
@@ -63,19 +64,19 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     while (mmap < mbt->mmap_addr + mbt->mmap_length) {
         switch (mmap->type) {
         case 1:
-            k_printf("Available\n");
+            printk("Available\n");
             break;
         case 2:
-            k_printf("Reserved\n");
+            printk("Reserved\n");
             break;
         case 3:
-            k_printf("ACPI Reserved\n");
+            printk("ACPI Reserved\n");
             break;
         case 4:
-            k_printf("NVS\n");
+            printk("NVS\n");
             break;
         case 5:
-            k_printf("Bad RAM\n");
+            printk("Bad RAM\n");
             break;
         }
         mmap = (multiboot_memory_map_t*)((unsigned int)mmap + mmap->size + sizeof(mmap->size));
@@ -83,19 +84,8 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
 
     cmos_time_t time;
     read_cmos_rtc(&time);
-    
-    /*
-    int i;
-    for (i = 0; i < 100; i++) {
-    	char c[2] = {0};
 
-    	c[0] = kbdus[getScancode()];
-    	k_printf(c, 0x07);
-    }
-    k_printf("Done!", 0x07);
-
-    */
     for (;;) {
-        __asm__("nop");
+        asm volatile ("nop");
     }
 }

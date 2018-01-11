@@ -29,3 +29,22 @@ inline uint32_t _read_cr4() {
   asm volatile("mov %%cr0, %0" : "=r"(ret));
   return ret;
 }
+
+void sys_shutdown() {
+  asm volatile("hlt");
+}
+
+void syscall_handler(unsigned int num) {
+  
+}
+
+void init_syscalls() {
+  for (int i = 0; i < NUM_SYSCALLS; i++) {
+    syscall_t call;
+    call.syscall = i;
+    call.handler = 0;
+    syscall_table[i] = call;
+  }
+
+  syscall_table[0].handler = &sys_shutdown;
+}

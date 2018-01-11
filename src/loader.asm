@@ -52,7 +52,7 @@ disable_pic:
   mov al, 0xff
   out 0xa1, al
   out 0x21, al
-  
+
 global idt_load
 extern idtp
 idt_load:
@@ -496,5 +496,6 @@ irq_common_stub:
 	iret
 
 section .bss
+align 4
     resb 16384
 _sys_stack:

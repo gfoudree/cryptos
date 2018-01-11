@@ -58,3 +58,11 @@ int memcmp(const void *dest, const void *src, unsigned int size) {
     }
     return 0;
 }
+
+int atoi(const char *str) {
+  int num = 0;
+  for (int i = 0; str[i] != '\0'; ++i) {
+    num = num * 10 + str[i] - '0';
+  }
+  return num;
+}

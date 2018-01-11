@@ -4,12 +4,13 @@
 #include <ioports.h>
 
 void k_cls(void) {
-    for (int i = 0; i < COLUMNS*LINES*2; i++) {
-        *(tty.videoPtr + i) = 0;
+    for (int i = 0; i < COLUMNS*LINES*2; i = i + 2) {
+        *(tty.videoPtr + i) = ' ';
+				*(tty.videoPtr + i + 1) = tty.curr_color;
     }
 }
 
-unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode) {
+unsigned int printkEx(const char *message, unsigned int line, unsigned int mode) {
     unsigned int i = 0;
     i = (line*80*2);
     while (*message != 0) {
@@ -29,49 +30,32 @@ unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mod
 }
 
 void putchar(const char c) {
-  unsigned int i = (tty.curr_line * 80 *2);
-  tty.videoPtr[i] = c;
-  tty.videoPtr[i + 1] = tty.curr_color;
+	if (tty.csr_x == COLUMNS || c == '\n') {
+		tty.csr_y++;
+		tty.csr_x = 0;
+	}
+	if (c == '\n') {
+		update_cursor(tty.csr_y, tty.csr_x);
+		return;
+	}
+  unsigned int offset = (tty.csr_y * COLUMNS * 2) + tty.csr_x * 2;
+
+  tty.videoPtr[offset] = c;
+  tty.videoPtr[offset + 1] = tty.curr_color;
   tty.csr_x++;
   update_cursor(tty.csr_y, tty.csr_x);
 }
 
-void k_printf(const char *message) {
+void printk(const char *message) {
     extern int *p_sysctl;
     if (p_sysctl[COM_DEBUG] > 0) { //Check for serial debugging
         sendStr(COM1, message);
         sendByte(COM1, 10);
     }
 
-    unsigned int i = (tty.curr_line*80*2); //Video array index
-    while (*message != 0) {
-
-        if (tty.csr_x == 80) { //Need to roll over to next line
-          tty.curr_line = (tty.curr_line + 1) % 25;
-          if (tty.curr_line == 0) { //If we are at the bottom of the page, clear screen
-              k_cls();
-          }
-          tty.csr_y++;
-          tty.csr_x = 0;
-        }
-        if (*message == '\n') {
-            tty.curr_line = (tty.curr_line + 1) % 25; //Increment the current line
-            if (tty.curr_line == 0) { //If we are at the bottom of the page, clear screen
-                k_cls();
-            }
-            i = (tty.curr_line*80*2);
-            message++;
-            tty.csr_y++;
-        } else {
-            tty.videoPtr[i] = *message;
-            message++;
-            i++;
-            tty.videoPtr[i] = tty.curr_color;
-            i++;
-
-            tty.csr_x++;
-            update_cursor(tty.csr_y, tty.csr_x);
-        }
+    while (*message != '\0') {
+			putchar(*message);
+			*message++;
     }
 }
 
@@ -80,7 +64,7 @@ void k_printdec(unsigned int value) {
     int i = 0, j = 0;
     char chra[32], chrb[32];
     if (value == 0) {
-        k_printf("0");
+        printk("0");
     }
     while (temp > 0) {
         chra[i] = '0' + temp%10;
@@ -92,11 +76,11 @@ void k_printdec(unsigned int value) {
     while (i >= 0) {
         chrb[i--] = chra[j++];
     }
-    k_printf(chrb);
+    printk(chrb);
 }
 
 void update_cursor(int row, int col) {
-    unsigned short position=(row*80) + col;
+    unsigned short position = (row*80) + col;
 
     outb(0x3D4, 0x0F);
     outb(0x3D5, (unsigned char)(position&0xFF));
@@ -112,7 +96,8 @@ void init_video(void) {
     tty.curr_line = 0;
     tty.curr_color = lGray;
 
-    k_cls();
+    //k_cls();
+		update_cursor(tty.csr_y, tty.csr_x);
 }
 
 void tty_set_color(unsigned int color) {
