@@ -47,6 +47,12 @@ reload_segments:
 
 	ret
 
+global disable_pic
+disable_pic:
+  mov al, 0xff
+  out 0xa1, al
+  out 0x21, al
+  
 global idt_load
 extern idtp
 idt_load:
@@ -488,7 +494,6 @@ irq_common_stub:
 	popa
 	add esp, 8
 	iret
-
 
 section .bss
     resb 16384

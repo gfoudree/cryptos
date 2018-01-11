@@ -47,7 +47,7 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     p_sysctl  = init_sysctl();
 
     asm volatile("sti"); //Enable interrupts
-    
+
     sysctl(COM_DEBUG, 1);
 
     idt_set_gate(0x80, (unsigned long int)&sys_int, 0x8, 0x8e); //Setup sys_int handler (int 0x80)
@@ -57,7 +57,6 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     k_printf("Initializing COM1... done\n");
 
     sendStr(COM1, "COM1 Port Initialized!\n");
-
 
     multiboot_memory_map_t *mmap = (multiboot_memory_map_t*)mbt->mmap_addr;
     while (mmap < mbt->mmap_addr + mbt->mmap_length) {

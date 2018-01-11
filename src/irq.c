@@ -3,29 +3,12 @@
 #include <idt.h>
 #include <ioports.h>
 
-extern void _irq0(void);
-extern void _irq1(void);
-extern void _irq2(void);
-extern void _irq3(void);
-extern void _irq4(void);
-extern void _irq5(void);
-extern void _irq6(void);
-extern void _irq7(void);
-extern void _irq8(void);
-extern void _irq9(void);
-extern void _irq10(void);
-extern void _irq11(void);
-extern void _irq12(void);
-extern void _irq13(void);
-extern void _irq14(void);
-extern void _irq15(void);
-
 void *irq_routines[16] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void irq_install_handler(int irq, void (*handler)(struct regs *r)) {
+void irq_install_handler(int irq, void (*handler)(regs_t *r)) {
     irq_routines[irq] = handler;
 }
 
@@ -33,21 +16,22 @@ void irq_uninstall_handler(int irq) {
     irq_routines[irq] = 0;
 }
 
-void irq_remap(void) {
-    outb(0x20, 0x11);
-    outb(0xA0, 0x11);
-    outb(0x21, 0x20);
-    outb(0xA1, 0x28);
-    outb(0x21, 0x04);
-    outb(0xA1, 0x02);
-    outb(0x21, 0x01);
-    outb(0xA1, 0x01);
-    outb(0x21, 0x00);
-    outb(0xA1, 0x00);
+void irq_remap(void) { //Need to remap IRQs to higher level interrupts in the PIC
+    outb(PIC1, 0x11);
+    outb(PIC2, 0x11);
+    outb(PIC1_DATA, PIC1);
+    outb(PIC2_DATA, 0x28);
+    outb(PIC1_DATA, 0x04);
+    outb(PIC2_DATA, 0x02);
+    outb(PIC1_DATA, 0x01);
+    outb(PIC2_DATA, 0x01);
+    outb(PIC1_DATA, 0x00);
+    outb(PIC2_DATA, 0x00);
 }
 
 void irq_install(void) {
     irq_remap();
+
     idt_set_gate(32, (unsigned)_irq0, 0x08, 0x8E);
     idt_set_gate(33, (unsigned)_irq1, 0x08, 0x8E);
     idt_set_gate(34, (unsigned)_irq2, 0x08, 0x8E);
@@ -66,13 +50,44 @@ void irq_install(void) {
     idt_set_gate(47, (unsigned)_irq15, 0x08, 0x8E);
 }
 
-void irq_handler(struct regs *r) {
-    void (*handler)(struct regs *r) = irq_routines[r->int_no - 32];
+void irq_handler(regs_t *r) {
+    unsigned int irq = r->int_no - 32;
+    void (*handler)(regs_t *r) = irq_routines[irq];
     if (handler) {
         handler(r);
     }
-    if (r->int_no >= 40) {
-        outb(0xA0, 0x20);
+
+    //Send End of Interrupt signal to the PIC
+    if (irq >= 8) { //If this came from the slave (IRQ >= 8), must inform both
+        outb(PIC2, PIC_EOI);
     }
-    outb(0x20, 0x20);
+    outb(PIC1, PIC_EOI);
+}
+
+void irq_set_mask(unsigned char irq_line) {
+  unsigned int port;
+  if (irq_line < 8) { //Talk to master PIC
+    port = PIC1_DATA;
+  }
+  else { //Talk to slave
+    irq_line -= 8;
+    port = PIC2_DATA;
+  }
+
+  uint8_t mask_val = inb(port);
+  outb(port, mask_val | (1 << irq_line)); //Set mask bit
+}
+
+void irq_clear_mask(unsigned char irq_line) {
+  unsigned int port;
+  if (irq_line < 8) { //Talk to master PIC
+    port = PIC1_DATA;
+  }
+  else { //Talk to slave
+    irq_line -= 8;
+    port = PIC2_DATA;
+  }
+
+  uint8_t mask_val = inb(port);
+  outb(port, mask_val & ~(1 << irq_line)); //Clear mask
 }
