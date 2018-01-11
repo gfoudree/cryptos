@@ -8,6 +8,7 @@
 #include <isrs.h>
 #include <keyboard.h>
 #include <multiboot.h>
+#include <cmos.h>
 
 int *p_sysctl;
 
@@ -70,10 +71,19 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
         case 3:
             k_printf("ACPI Reserved\n");
             break;
+        case 4:
+            k_printf("NVS\n");
+            break;
+        case 5:
+            k_printf("Bad RAM\n");
+            break;
         }
         mmap = (multiboot_memory_map_t*)((unsigned int)mmap + mmap->size + sizeof(mmap->size));
     }
 
+    cmos_time_t time;
+    read_cmos_rtc(&time);
+    
     /*
     int i;
     for (i = 0; i < 100; i++) {
