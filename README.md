@@ -5,6 +5,7 @@
 - Docker (if you don't want to setup gcc)
 - Nasm
 - Qemu
+- Xorriso (building the ISO file)
 
 
 The easiest way to run things is with the Docker image that contains the proper compiler. You can build the image from the git directory by typing:

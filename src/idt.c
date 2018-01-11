@@ -19,7 +19,7 @@ void idt_install(void) {
     idtp.limit = (sizeof(struct idt_entry) * 256) -1;
     idtp.base = (int)&idt;
 
-    memset((void*)&idt, 0, sizeof(struct idt_entry) * 256);
+    memset((void*)&idt, 0, sizeof(struct idt_entry) * 256); //Clear out structure
 
     idt_load();
 }

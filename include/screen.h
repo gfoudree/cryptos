@@ -36,5 +36,5 @@ void k_printf(const char *message);
 void init_video(void);
 void update_cursor(int row, int col);
 void tty_set_color(unsigned int color);
-
+void putchar(const char c);
 static tty_t tty;
