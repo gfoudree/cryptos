@@ -1,9 +1,11 @@
 #ifndef IOPORTS_H
 #define IOPORTS_H
 
-void outb(unsigned short port, unsigned char value);
-void outw(unsigned short port, unsigned short value);
-unsigned char inb(unsigned short port);
-unsigned short inw(unsigned short port);
+#include <types.h>
+
+void outb(uint16_t port, uint8_t value);
+void outw(uint16_t port, uint16_t value);
+uint8_t inb(uint16_t port);
+uint16_t inw(uint16_t port);
 
 #endif

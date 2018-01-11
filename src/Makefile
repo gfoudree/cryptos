@@ -13,7 +13,7 @@ all : $(TARGET)
 loader.o : loader.asm
 	$(ASM) $(ASMFLAGS) -o $@ $^
 
-$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o
+$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o kernel.o
 	$(CC) $(LDFLAGS) $^ -o $(TARGET)
 
 clean:

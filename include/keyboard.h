@@ -1,6 +1,10 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
+#define KEYBD_CMD_SETLED 0xED
+#define KEYBD_OUTCMD_REG 0x60
+#define KEYBD_STATS_REG 0x64
+
 static const unsigned char kbdus[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -42,5 +46,7 @@ static const unsigned char kbdus[128] =
 };
 
 void keyboard_install(void);
+void keyboard_send_cmd(int cmd, unsigned char data);
+void keyboard_setleds(int scrollLock, int capsLock, int numLock);
 
 #endif
