@@ -1,7 +1,15 @@
 [BITS 32]
-global start
-global gdt_flush
-extern _kmain, code, bss, end
+global start, gdt_flush, disable_pic, idt_load, syscall_gate
+
+global _isr0, _isr1, _isr2, _isr3, _isr4, _isr5, _isr6, _isr7, _isr8, _isr9, \
+  _isr10, _isr11, _isr12, _isr13, _isr14, _isr15, _isr16, _isr17, _isr18, _isr19, \
+  _isr20, _isr21, _isr22, _isr23, _isr24, _isr25, _isr26, _isr27, _isr28, _isr29, \
+  _isr30, _isr31
+
+global _irq0, _irq1, _irq2, _irq3, _irq4, _irq5, _irq6, _irq7, _irq8, _irq9, \
+    _irq10, _irq11, _irq12, _irq13, _irq14, _irq15
+
+extern _kmain, code, bss, end, syscall_handler, idtp, fault_handler, irq_handler
 
 ALIN    equ 1<<0
 MEMINFO  equ 1<<1
@@ -21,7 +29,6 @@ section .multiboot
     dd start
 
 section .text
-
 start:
   mov esp, _sys_stack ;Setup 16k stack pointer
   push ebx ;Push multiboot header
@@ -44,53 +51,26 @@ reload_segments:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
-
 	ret
 
-global disable_pic
 disable_pic:
   mov al, 0xff
   out 0xa1, al
   out 0x21, al
 
-global idt_load
-extern idtp
+syscall_gate:
+  push eax
+  push ebx
+  push ecx
+  push edx
+  mov eax, syscall_handler
+  call eax
+  add esp, 16 ;Restore stack
+  ret
+
 idt_load:
   lidt [idtp]
   ret
-
-global _isr0
-global _isr1
-global _isr2
-global _isr3
-global _isr4
-global _isr5
-global _isr6
-global _isr7
-global _isr8
-global _isr9
-global _isr10
-global _isr11
-global _isr12
-global _isr13
-global _isr14
-global _isr15
-global _isr16
-global _isr17
-global _isr18
-global _isr19
-global _isr20
-global _isr21
-global _isr22
-global _isr23
-global _isr24
-global _isr25
-global _isr26
-global _isr27
-global _isr28
-global _isr29
-global _isr30
-global _isr31
 
 ; 0: Divide by zero exception
 _isr0:
@@ -310,9 +290,6 @@ _isr31:
 	push byte 31
 	jmp isr_common_stub
 
-;External C fault handler
-extern fault_handler
-
 isr_common_stub:
 	pusha
 	push ds
@@ -336,23 +313,6 @@ isr_common_stub:
 	popa
 	add esp, 8
 	iret
-
-global _irq0
-global _irq1
-global _irq2
-global _irq3
-global _irq4
-global _irq5
-global _irq6
-global _irq7
-global _irq8
-global _irq9
-global _irq10
-global _irq11
-global _irq12
-global _irq13
-global _irq14
-global _irq15
 
 ; 32: IRQ0
 _irq0:
@@ -465,8 +425,6 @@ _irq15:
 	push byte 0
 	push byte 47
 	jmp irq_common_stub
-
-extern irq_handler
 
 irq_common_stub:
 	pusha

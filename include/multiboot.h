@@ -139,6 +139,7 @@ struct multiboot_elf_section_header_table
   multiboot_uint32_t addr;
   multiboot_uint32_t shndx;
 };
+
 typedef struct multiboot_elf_section_header_table multiboot_elf_section_header_table_t;
 
 struct multiboot_info

@@ -1,5 +1,8 @@
+#ifndef SCREEN_H
+#define SCREEN_H
+
 #define COLUMNS 80
-#define LINES 24
+#define ROWS 25
 
 #include <types.h>
 
@@ -31,15 +34,16 @@ typedef struct tty {
 } tty_t;
 
 int printf(const char* restrict format, ...);
-void scroll(unsigned int mode);
-void move_csr(void);
 void k_cls(void);
 void k_printhex(uint32_t num);
 void k_printdec(unsigned int value);
-unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode);
 void printk(const char *message);
 void init_video(void);
 void update_cursor(int row, int col);
 void tty_set_color(unsigned int color);
 void putchar(const char c);
-static tty_t tty;
+
+const static char hex_table[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+#endif

@@ -1,6 +1,6 @@
 #include <sysctl.h>
 
-static int sysctls[2];
+static int sysctls[NUM_SYSCTLS];
 
 void sysctl(const int param, const int value) {
     sysctls[param] = value;
