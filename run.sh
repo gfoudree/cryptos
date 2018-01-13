@@ -20,7 +20,8 @@ grub2-mkrescue -o os.iso isodir
 
 if [[ "$1" == "debug" ]]
 then
-	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 4096 -s -S
+	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 4096 -s -S 2>/dev/null & 
+	gdb src/kernel.bin -ex 'target remote localhost:1234'
 else
 	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 4096
 fi

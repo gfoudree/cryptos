@@ -79,6 +79,31 @@ void k_printdec(unsigned int value) {
     printk(chrb);
 }
 
+const static char hex_table[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+void k_printhex(uint32_t num) {
+  char buffer[16] = {0};
+  uint8_t len = 0;
+
+  buffer[0] = '0';
+  buffer[1] = 'x';
+
+  do {
+    buffer[len+2] = hex_table[num & 0xF];
+    len++;
+    num >>= 4;
+  } while (num != 0);
+
+  //Reverse string
+  for (int i = 0; i < len / 2; i++) {
+    buffer[i+2] ^= buffer[len - i - 1 + 2];
+    buffer[len - i - 1 + 2] ^= buffer[i + 2];
+    buffer[i + 2] ^= buffer[len - i - 1 + 2];
+  }
+  printk(buffer);
+}
+
 void update_cursor(int row, int col) {
     unsigned short position = (row*80) + col;
 
@@ -96,7 +121,7 @@ void init_video(void) {
     tty.curr_line = 0;
     tty.curr_color = lGray;
 
-    //k_cls();
+    k_cls();
 		update_cursor(tty.csr_y, tty.csr_x);
 }
 

@@ -1,6 +1,8 @@
 #define COLUMNS 80
 #define LINES 24
 
+#include <types.h>
+
 enum screenColors {
 	black = 0x0,
 	blue = 0x1,
@@ -28,11 +30,14 @@ typedef struct tty {
 	unsigned int curr_color;
 } tty_t;
 
+int printf(const char* restrict format, ...);
 void scroll(unsigned int mode);
 void move_csr(void);
 void k_cls(void);
+void k_printhex(uint32_t num);
+void k_printdec(unsigned int value);
 unsigned int k_printfEx(const char *message, unsigned int line, unsigned int mode);
-void k_printf(const char *message);
+void printk(const char *message);
 void init_video(void);
 void update_cursor(int row, int col);
 void tty_set_color(unsigned int color);

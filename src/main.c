@@ -57,16 +57,18 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     printk("Cryptos ver. 0.03\n");
     printk("Initializing Video... done\n");
     printk("Initializing COM1... done\n");
-
+    k_printhex(0xcdef);
     sendStr(COM1, "COM1 Port Initialized!\n");
 
     multiboot_memory_map_t *mmap = (multiboot_memory_map_t*)mbt->mmap_addr;
     while (mmap < mbt->mmap_addr + mbt->mmap_length) {
         switch (mmap->type) {
         case 1:
+            k_printdec(mmap->addr);
             printk("Available\n");
             break;
         case 2:
+            k_printdec(mmap->addr);
             printk("Reserved\n");
             break;
         case 3:
