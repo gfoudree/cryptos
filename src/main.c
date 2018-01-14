@@ -14,9 +14,10 @@
 
 kernel_data_t kernel_data;
 
-void _kmain(multiboot_info_t* mbt, unsigned int magic) {
+void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     kernel_data.mbt = mbt;
-    __asm__ volatile("movl %0, %%eax" : "=r"(kernel_data.heap_ptr) : :);
+    kernel_data.heap_base = heap_base;
+    kernel_data.heap_ptr = kernel_data.heap_base;
 
     init_gdt();
     idt_install();
@@ -24,7 +25,7 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     irq_install();
     isrs_install();
     keyboard_install();
-    //timer_install();
+    timer_install();
 
     init_video();
     printk("Cryptos ver. 0.03\n");
@@ -41,10 +42,13 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
 
     sysctl(COM_DEBUG, 1);
 
+    k_printdec((mbt->mem_lower + mbt->mem_upper)/1000);
+    printk(" MB of RAM available\nMemory Map:\n");
     print_mmap(mbt);
 
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
+
     for (;;) {
         __asm__ volatile ("nop");
     }

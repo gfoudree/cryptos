@@ -18,7 +18,8 @@ typedef struct kernel_data {
   syscall_t syscall_table[NUM_SYSCALLS];
   tty_t tty;
   multiboot_info_t* mbt;
-  void *heap_ptr;
+  uint32_t heap_ptr;
+  uint32_t heap_base;
   uint32_t cpu_ticks;
   uint32_t uptime; //In seconds
 } kernel_data_t;

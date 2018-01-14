@@ -1,11 +1,11 @@
 OUTPUT_FORMAT("elf32-i386")
 OUTPUT_ARCH(i386)
-ENTRY(start)
+ENTRY(init)
 
 SECTIONS {
-  . = 1M;
+  . = 0xC0100000;
 
-  .text : {
+  .text : AT(ADDR(.text) - 0xC0000000){
     code = .;
     *(.multiboot)
     *(.text)
@@ -13,13 +13,14 @@ SECTIONS {
     . = ALIGN(4096);
   }
 
-  .data : {
+  .data : AT(ADDR(.data) - 0xC0000000) {
     *(.data)
     . = ALIGN(4096);
   }
 
-  .bss : {
+  .bss : AT(ADDR(.bss) - 0xC0000000) {
     bss = .;
+    *(COMMON)
     *(.bss)
     . = ALIGN(4096);
   }

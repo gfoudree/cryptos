@@ -98,7 +98,7 @@ void update_cursor(int row, int col) {
 }
 
 void init_video(void) {
-    kernel_data.tty.videoPtr = (unsigned char *)0xB8000;
+    kernel_data.tty.videoPtr = (unsigned char *)(0xB8000 + 0xC0000000);
 
     kernel_data.tty.csr_x = 0;
     kernel_data.tty.csr_y = 0;
