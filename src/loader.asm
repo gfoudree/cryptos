@@ -1,5 +1,5 @@
 [BITS 32]
-global start, gdt_flush, disable_pic, idt_load, syscall_gate
+global start, gdt_flush, disable_pic, idt_load, syscall_gate, enable_a20
 
 global _isr0, _isr1, _isr2, _isr3, _isr4, _isr5, _isr6, _isr7, _isr8, _isr9, \
   _isr10, _isr11, _isr12, _isr13, _isr14, _isr15, _isr16, _isr17, _isr18, _isr19, \
@@ -18,7 +18,7 @@ MAGIC    equ 0x1BADB002
 CHECKSUM equ -(MAGIC + FLAGS)
 
 ALIGN 4
-section .multiboot
+[SECTION .multiboot]
     dd MAGIC
     dd FLAGS
     dd CHECKSUM
@@ -28,7 +28,7 @@ section .multiboot
     dd end
     dd start
 
-section .text
+[SECTION .text]
 start:
   mov esp, _sys_stack ;Setup 16k stack pointer
   push ebx ;Push multiboot header
@@ -58,6 +58,13 @@ disable_pic:
   out 0xa1, al
   out 0x21, al
 
+enable_a20:
+  push ax
+  mov al, 2
+  out 0x92, al
+  pop ax
+  ret
+  
 syscall_gate:
   push eax
   push ebx
@@ -453,7 +460,7 @@ irq_common_stub:
 	add esp, 8
 	iret
 
-section .bss
-align 4
+[SECTION .bss]
+ALIGN 4
     resb 16384
 _sys_stack:

@@ -10,6 +10,7 @@
 #include <multiboot.h>
 #include <cmos.h>
 #include <kernel.h>
+#include <timer.h>
 
 kernel_data_t kernel_data;
 
@@ -23,6 +24,8 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     irq_install();
     isrs_install();
     keyboard_install();
+    //timer_install();
+
     init_video();
     printk("Cryptos ver. 0.03\n");
     printk("Initializing Video... done\n");
@@ -39,6 +42,7 @@ void _kmain(multiboot_info_t* mbt, unsigned int magic) {
     sysctl(COM_DEBUG, 1);
 
     print_mmap(mbt);
+
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
     for (;;) {

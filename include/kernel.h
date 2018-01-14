@@ -19,6 +19,8 @@ typedef struct kernel_data {
   tty_t tty;
   multiboot_info_t* mbt;
   void *heap_ptr;
+  uint32_t cpu_ticks;
+  uint32_t uptime; //In seconds
 } kernel_data_t;
 
 extern kernel_data_t kernel_data;
