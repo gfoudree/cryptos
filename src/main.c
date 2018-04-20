@@ -11,6 +11,7 @@
 #include <cmos.h>
 #include <kernel.h>
 #include <timer.h>
+#include <mm.h>
 
 kernel_data_t kernel_data;
 
@@ -38,7 +39,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     kernel_data.p_sysctl = init_sysctl();
 
     init_syscalls();
-    __asm__ volatile("sti"); //Enable interrupts
+
 
     sysctl(COM_DEBUG, 1);
 
@@ -46,6 +47,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     printk(" MB of RAM available\nMemory Map:\n");
     print_mmap(mbt);
 
+    __asm__ volatile("sti"); //Enable interrupts
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
 

@@ -109,7 +109,8 @@ unsigned char *exception_messages[] = {
 void fault_handler(struct regs *r) {
     if (r->int_no < 32) {
         printk(exception_messages[r->int_no]);
-        printk("Exception occured, halting system!");
+        printk(" exception occured, halting system!\nEIP = ");
+        k_printhex(r->eip);
         for (;;);
     }
 }
