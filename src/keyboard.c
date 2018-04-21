@@ -5,10 +5,22 @@
 
 void keyboard_handler(struct regs *r) {
     unsigned char scancode = inb(KEYBD_OUTCMD_REG);
-    if (scancode & 0x80) { //Key released
-
-    } else { //Key pressed
-        putchar((const char)kbdus[scancode]);
+    if ((scancode & 0x80) == 128) { //Key released because bit 0x80 set
+      scancode &= (~0x80); //Clear released bit
+      if (scancode == L_SHIFT || scancode == R_SHIFT) {
+        shift_pressed = 0; //Release shift
+      }
+    }
+    else { //Key pressed
+        if (scancode == L_SHIFT || scancode == R_SHIFT)
+          shift_pressed = 1;
+        else {
+          int key = kbdus[scancode];
+          if (shift_pressed == 1 && key > 96 && key < 123) {
+              key -= 32; //Convert to caps
+          }
+            putchar((const char)key);
+        }
     }
 }
 

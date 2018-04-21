@@ -4,6 +4,7 @@
 #ALSO: SELinux seems to cause problems at times so just do setenforce 0
 echo "building..."
 
+alias grub-mkrescue=grub2-mkrescue
 rm -f src/kernel.bin
 rm -f os.iso
 

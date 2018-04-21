@@ -5,6 +5,10 @@
 #define KEYBD_OUTCMD_REG 0x60
 #define KEYBD_STATS_REG 0x64
 
+#define L_SHIFT 42
+#define R_SHIFT 54
+
+static int shift_pressed = 0;
 static const unsigned char kbdus[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */

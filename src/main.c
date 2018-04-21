@@ -40,7 +40,6 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
 
     init_syscalls();
 
-
     sysctl(COM_DEBUG, 1);
 
     k_printdec((mbt->mem_lower + mbt->mem_upper)/1000);
