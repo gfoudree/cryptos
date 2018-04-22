@@ -1,14 +1,25 @@
 [BITS 32]
-global start, gdt_flush, disable_pic, idt_load, syscall_gate, enable_a20
-extern _kmain, code, bss, end, syscall_handler, idtp, fault_handler, irq_handler
+global start, gdt_flush, disable_pic, idt_load, syscall_gate, enable_a20, page_directory
+extern _kmain, code, bss, end, syscall_handler, idtp, fault_handler, irq_handler, page_translate_noreloc
 
-ALIN    equ 1<<0
+PAGE_PRESENT equ 1
+PAGE_WRITABLE equ 2
+PAGE_USER equ 4
+PAGE_WRITE_THROUGH equ 8
+PAGE_CACHE_DISABLE equ 16
+PAGE_ACCESSED equ 32
+PAGE_DIRTY equ 64
+PAGE_4MB equ 128
+
+PAGE_RW_4MB equ PAGE_PRESENT | PAGE_WRITABLE | PAGE_4MB
+
+ALIN     equ 1<<0
 MEMINFO  equ 1<<1
 FLAGS    equ ALIN | MEMINFO
 MAGIC    equ 0x1BADB002
 CHECKSUM equ -(MAGIC + FLAGS)
 
-KERNEL_VBASE equ 0xC0000000
+KERNEL_VBASE equ 0xC0000000 ;Load kernel at this vaddr
 KERNEL_PAGE_INDEX equ (KERNEL_VBASE >> 22) ;Get page directory entry index
 
 %macro isr_handler 1
@@ -31,16 +42,9 @@ _irq%1:
 
 [SECTION .data]
 ALIGN 0x1000
-global page_directory
 page_directory: ;We only have 1 table with 4MB pages!
-  ;Map 0x00000000 - 0x00400000 (First 4 MB) to 0x00000000 - 0x00400000
-  ; bit 7: PS The kernel page is 4MB.
-  ; bit 1: RW The kernel page is read/write.
-  ; bit 0: P  The kernel page is present.
-  dd 0x00000083               ;0x83 = writable, present, and 4MB page bit set (http://www.rcollins.org/ddj/May96/)
-  times (KERNEL_PAGE_INDEX - 1) dd 0 ; Other pages set to 0
-  dd 0x00000083 ;Map 0xC0000000 - 0xC0400000 (Kernel 4 MB) to 0x00000000 - 0x00400000
-  times (0x1000 - KERNEL_PAGE_INDEX) dd 0 ; total of 4096 entries!
+
+  times (0x1000) dd 0 ; Empty page directory
 
 ALIGN 4
 [SECTION .multiboot]
@@ -56,6 +60,21 @@ ALIGN 4
 [SECTION .text]
 global init
 init:
+  ;http://www.rcollins.org/ddj/May96/
+  push (page_directory - KERNEL_VBASE) ; Calculate offset address
+  push PAGE_RW_4MB
+  push 0    ;Physical Addr
+  push 0    ;Virtual Addr
+  mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0x00000000 - 0x00400000 (First 4 MB) to 0x00000000 - 0x00400000
+  call ecx
+
+  push (page_directory - KERNEL_VBASE) ; Calculate offset address
+  push PAGE_RW_4MB
+  push 0            ;Physical Addr
+  push 0xC0000000   ;Virtual Addr
+  mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0xC0000000 - 0xC0400000 (Kernel 4 MB) to 0x00000000 - 0x00400000
+  call ecx
+
   mov ecx, (page_directory - KERNEL_VBASE) ;Copy PHYSICAL addr of page table
   mov cr3, ecx
 

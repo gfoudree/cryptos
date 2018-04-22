@@ -3,11 +3,22 @@
 
 #include <kernel.h>
 
+#define PAGE_PRESENT 1
+#define PAGE_WRITABLE 2
+#define PAGE_USER 4
+#define PAGE_WRITE_THROUGH 8
+#define PAGE_CACHE_DISABLE 16
+#define PAGE_ACCESSED 32
+#define PAGE_DIRTY 64
+#define PAGE_4MB 128
+
 extern kernel_data_t kernel_data;
+extern uint32_t page_directory [1024];
 
-
+void page_translate(uint32_t virt, uint32_t phys, uint16_t flags);
+void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t page_directory_ptr[]);
 uint32_t kmalloc(uint32_t sz);
-
+/*
 typedef struct __attribute__((__packed__)) page_directory {
   uint8_t present : 1;
   uint8_t writable : 1;
@@ -24,29 +35,6 @@ typedef struct __attribute__((__packed__)) page_directory {
   uint16_t phys_addr : 10;
 
   uint32_t remain : 24;
-} page_directory_t;
-
-extern uint32_t page_directory [1024];
-
-/*
-typedef struct page {
-    uint8_t present : 1;
-    uint8_t rw : 1;
-    uint8_t user : 1;
-    uint8_t accessed : 1;
-    uint8_t dirty : 1;
-    uint8_t unused : 7;
-    uint32_t frame : 20;
-} page_t;
-
-typedef struct page_table {
-  page_t pages[1024];
-} page_table_t;
-
-typedef struct page_directory {
-  page_table_t *tables[1024];
-  uint32_t tables_phys[1024];
-  uint32_t phys_addr;
 } page_directory_t;
 */
 
