@@ -1,5 +1,5 @@
-CC = gcc
-CFLAGS = -O0 -g -ffreestanding -nostdlib  -I ../include -Wall -Wno-pointer-sign -Wno-unused-variable -Wno-unused-function -std=c99
+CC = i686-elf-gcc
+CFLAGS = -O0 -ffreestanding -nostdlib  -I ../include -Wall -Wno-pointer-sign -Wno-unused-variable -Wno-unused-function -std=c99
 ASM = nasm
 ASMFLAGS = -f elf
 LDFLAGS = -T link.ld -nostdlib -nostdinc
