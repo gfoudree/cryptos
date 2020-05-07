@@ -17,7 +17,14 @@ extern uint32_t page_directory [1024];
 
 void page_translate(uint32_t virt, uint32_t phys, uint16_t flags);
 void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t page_directory_ptr[]);
-uint32_t kmalloc(uint32_t sz);
+void *kmalloc(uint32_t sz);
+void kfree(void *p);
+
+typedef struct __attribute__((__packed__)) memory_block {
+    uint8_t free;
+    uint32_t size;
+} memory_block_t;
+
 /*
 typedef struct __attribute__((__packed__)) page_directory {
   uint8_t present : 1;
