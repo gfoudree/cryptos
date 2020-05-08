@@ -61,17 +61,19 @@ ALIGN 4
 global init
 init:
   ;http://www.rcollins.org/ddj/May96/
+  ; Setup identity paging (virt -> phys 1:1)
   push (page_directory - KERNEL_VBASE) ; Calculate offset address
   push PAGE_RW_4MB
   push 0    ;Physical Addr
   push 0    ;Virtual Addr
   mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0x00000000 - 0x00400000 (First 4 MB) to 0x00000000 - 0x00400000
   call ecx
-
+  
+  ; Setup kernel code region 4MB
   push (page_directory - KERNEL_VBASE) ; Calculate offset address
   push PAGE_RW_4MB
   push 0            ;Physical Addr
-  push 0xC0000000   ;Virtual Addr
+  push KERNEL_VBASE   ;Virtual Addr
   mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0xC0000000 - 0xC0400000 (Kernel 4 MB) to 0x00000000 - 0x00400000
   call ecx
 
@@ -89,10 +91,22 @@ init:
   lea ecx, [start] ;Update EIP register to higher-half addresses
   jmp ecx
 
+usrpg:
+  push (page_directory - KERNEL_VBASE) ; Calculate offset address
+  push PAGE_RW_4MB
+  push 0x00800000            ;Physical Addr
+  push 0x01400000   ;Virtual Addr
+  mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0xC0000000 - 0xC0400000 (Kernel 4 MB) to 0x00000000 - 0x00400000
+  call ecx
+
+  invlpg [0x01400000]
+  ret
+
 start:
   ;mov dword [page_directory], 0 ;We can unmap this 0x0->0x0 mapping if we want
   ;invlpg [0] ;Invalid the page
 
+  
   mov esp, _sys_stack ;Setup 16k stack pointer
 
   mov eax, end

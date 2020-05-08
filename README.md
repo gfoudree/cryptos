@@ -16,6 +16,15 @@ Then run
 
 `./run.sh`
 
+## Memory Map:
+
+
+
+| Physical                	| Virtual                 	| Data        	|
+|-------------------------	|-------------------------	|-------------	|
+| 0x00000000 - 0x00400000 	| 0xC0000000 - 0xC0400000 	| Kernel      	|
+| 0x00400000 - 0x00C00000 	| 0xC0400000 - 0xC0C00000 	| Kernel Heap 	|
+| 0x00C00000 - 0x01800000 	| 0x80000000 - 0x8C000000 	| Userspace   	|
 
 ## Notes:
 Sources for this project include

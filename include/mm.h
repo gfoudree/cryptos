@@ -15,7 +15,7 @@
 extern kernel_data_t kernel_data;
 extern uint32_t page_directory [1024];
 
-void page_translate(uint32_t virt, uint32_t phys, uint16_t flags);
+void page_translate(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t p[]);
 void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t page_directory_ptr[]);
 void *kmalloc(uint32_t sz);
 void kfree(void *p);

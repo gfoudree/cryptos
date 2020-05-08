@@ -22,6 +22,7 @@ typedef struct kernel_data {
   uint32_t heap_base;
   uint32_t cpu_ticks;
   uint32_t uptime; //In seconds
+  uint32_t *page_directory; // Pointer to page directory table
 } kernel_data_t;
 
 extern kernel_data_t kernel_data;
