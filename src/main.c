@@ -15,22 +15,8 @@
 
 kernel_data_t kernel_data;
 
-void map(uint32_t phys, uint32_t virt, uint32_t flags, uint32_t *pd) {
-    uint32_t page_index = (virt >> 22);
-    uint32_t page_entry = 0;
-    
-    page_entry |= (PAGE_4MB | PAGE_WRITABLE | PAGE_PRESENT | flags);
-    page_entry |= (phys & 0xFFF00000);
-
-    pd[page_index] = page_entry;
-
-   __asm__ volatile("invlpg (%0)" :: "b"(virt) : "memory");
-}
-
 void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     kernel_data.mbt = mbt;
-    kernel_data.heap_base = heap_base;
-    kernel_data.heap_ptr = kernel_data.heap_base;
 
     // Read page table directory pointer from cr3
     uint32_t cr3 = 0;
@@ -44,6 +30,13 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     page_translate(0x80800000, 0x01400000, PAGE_USER, kernel_data.page_directory);
     page_translate(0x80c00000, 0x01800000, PAGE_USER, kernel_data.page_directory);
 
+    // Setup kernel heap page mapping
+    page_translate(0xC0400000, 0x00400000, 0, kernel_data.page_directory);
+    page_translate(0xC0800000, 0x00800000, 0, kernel_data.page_directory);
+    page_translate(0xC0C00000, 0x00C00000, 0, kernel_data.page_directory);
+    kernel_data.heap_base = (void*)0xC0400000;
+    kernel_data.heap_ptr = kernel_data.heap_base;
+    kernel_data.heap_end = (void*)0xC1000000;
 
     init_gdt();
     idt_install();
@@ -71,6 +64,11 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     printk(" MB of RAM available\nMemory Map:\n");
     print_mmap(mbt);
 
+    char *b = kmalloc(25);
+    strcpy(b, "hello");
+    printk(b);
+    kfree(b);
+    
     __asm__ volatile("sti"); //Enable interrupts
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");

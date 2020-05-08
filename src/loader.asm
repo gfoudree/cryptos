@@ -91,17 +91,6 @@ init:
   lea ecx, [start] ;Update EIP register to higher-half addresses
   jmp ecx
 
-usrpg:
-  push (page_directory - KERNEL_VBASE) ; Calculate offset address
-  push PAGE_RW_4MB
-  push 0x00800000            ;Physical Addr
-  push 0x01400000   ;Virtual Addr
-  mov ecx, (page_translate_noreloc - KERNEL_VBASE) ;Map 0xC0000000 - 0xC0400000 (Kernel 4 MB) to 0x00000000 - 0x00400000
-  call ecx
-
-  invlpg [0x01400000]
-  ret
-
 start:
   ;mov dword [page_directory], 0 ;We can unmap this 0x0->0x0 mapping if we want
   ;invlpg [0] ;Invalid the page

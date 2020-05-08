@@ -16,12 +16,17 @@ typedef struct syscall {
 typedef struct kernel_data {
   int *p_sysctl;
   syscall_t syscall_table[NUM_SYSCALLS];
+  
   tty_t tty;
   multiboot_info_t* mbt;
-  uint32_t heap_ptr;
-  uint32_t heap_base;
+
+  uint32_t *heap_ptr;
+  uint32_t *heap_base;
+  uint32_t *heap_end;
+
   uint32_t cpu_ticks;
   uint32_t uptime; //In seconds
+
   uint32_t *page_directory; // Pointer to page directory table
 } kernel_data_t;
 
