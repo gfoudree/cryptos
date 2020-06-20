@@ -78,3 +78,25 @@ void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32
   page_entry |= (phys & 0xFFF00000); //0xFFF masks bits 31..22 of address for PTE
   page_directory_ptr[page_index] = page_entry;
 }
+
+void setup_memory() {
+    // Read page table directory pointer from cr3
+    uint32_t cr3 = 0;
+    __asm__ volatile("movl %%cr3, %0" :"=r"(cr3) : :);
+    kernel_data.page_directory = (uint32_t*)cr3;
+
+    // Dump TLB with ctrl+alt+shift+2 -> QEMU monitor mode. Then type: "info tlb"
+    // Setup user-space page mapping
+    page_translate(0x80000000, 0x00C00000, PAGE_USER, kernel_data.page_directory);
+    page_translate(0x80400000, 0x01000000, PAGE_USER, kernel_data.page_directory);
+    page_translate(0x80800000, 0x01400000, PAGE_USER, kernel_data.page_directory);
+    page_translate(0x80c00000, 0x01800000, PAGE_USER, kernel_data.page_directory);
+
+    // Setup kernel heap page mapping
+    page_translate(0xC0400000, 0x00400000, 0, kernel_data.page_directory);
+    page_translate(0xC0800000, 0x00800000, 0, kernel_data.page_directory);
+    page_translate(0xC0C00000, 0x00C00000, 0, kernel_data.page_directory);
+    kernel_data.heap_base = (void*)0xC0400000;
+    kernel_data.heap_ptr = kernel_data.heap_base;
+    kernel_data.heap_end = (void*)0xC1000000;
+}

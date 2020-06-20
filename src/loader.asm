@@ -1,5 +1,5 @@
 [BITS 32]
-global start, gdt_flush, disable_pic, idt_load, syscall_gate, enable_a20, page_directory
+global start, gdt_flush, disable_pic, idt_load, syscall_gate, enable_a20
 extern _kmain, code, bss, end, syscall_handler, idtp, fault_handler, irq_handler, page_translate_noreloc
 
 PAGE_PRESENT equ 1
