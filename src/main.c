@@ -12,6 +12,7 @@
 #include <kernel.h>
 #include <timer.h>
 #include <mm.h>
+#include <pci.h>
 
 kernel_data_t kernel_data;
 
@@ -45,7 +46,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     print_mmap(mbt);
 
     char *b = kmalloc(25);
-    strcpy(b, "hello");
+    strcpy(b, "Boot complete!\n");
     printk(b);
     kfree(b);
     
@@ -53,6 +54,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
 
+    pci_enum_bus();
     for (;;) {
         __asm__ volatile ("nop");
     }
