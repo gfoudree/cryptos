@@ -1,14 +1,10 @@
 #!/bin/bash
-#Requires the docker image is built. If not, type
-#docker build -t devenv .
-#ALSO: SELinux seems to cause problems at times so just do setenforce 0
 echo "building..."
-docker build -t devenv . 
 #alias grub-mkrescue=grub2-mkrescue
 rm -f src/kernel.bin
 rm -f os.iso
 
-sudo docker run --rm -v "$PWD":/tmp/myos -w /tmp/myos devenv make
+make
 
 if [ $? -ne 0 ]
 then
