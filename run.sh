@@ -1,6 +1,5 @@
 #!/bin/bash
 echo "building..."
-#alias grub-mkrescue=grub2-mkrescue
 rm -f src/kernel.bin
 rm -f os.iso
 
@@ -19,10 +18,10 @@ fi
 
 if [ "$1" == "debug" ]
 then
-	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 1024 -s -S 2>/dev/null & 
+	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -s -S 2>/dev/null & 
 	cd src
 	gdb kernel.bin -ex 'target remote localhost:1234'
 else
-	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 1024
+	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img
 fi
 #bochs -f bochs.bxrc -q &

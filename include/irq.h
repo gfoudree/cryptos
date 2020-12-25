@@ -12,6 +12,12 @@
 #define PIC2_DATA	(PIC2+1)
 #define PIC_EOI 0x20
 
+// IRQ numbers
+
+#define IRQ_TIMER 0
+#define IRQ_KEYBOARD 1
+#define IRQ_ATA 14
+
 typedef struct regs
 {
     unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;

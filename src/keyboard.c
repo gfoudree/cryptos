@@ -25,15 +25,15 @@ void keyboard_handler(struct regs *r) {
 }
 
 void keyboard_install(void) {
-  keyboard_setleds(0, 0, 1);
-    irq_install_handler(1, &keyboard_handler);
+    keyboard_setleds(0, 0, 1);
+    irq_install_handler(IRQ_KEYBOARD, &keyboard_handler);
 }
 
 void keyboard_send_cmd(int cmd, unsigned char data) {
-  while ((inb(KEYBD_STATS_REG) & 0x2) != 0) {} //Wait for keyboard to be ready
-  outb(KEYBD_OUTCMD_REG, cmd);
-  while ((inb(KEYBD_STATS_REG) & 0x2) != 0) {} //Wait for keyboard to be ready
-  outb(KEYBD_OUTCMD_REG, data);
+    while ((inb(KEYBD_STATS_REG) & 0x2) != 0) {} //Wait for keyboard to be ready
+    outb(KEYBD_OUTCMD_REG, cmd);
+    while ((inb(KEYBD_STATS_REG) & 0x2) != 0) {} //Wait for keyboard to be ready
+    outb(KEYBD_OUTCMD_REG, data);
 }
 
 void keyboard_setleds(int scrollLock, int capsLock, int numLock) {

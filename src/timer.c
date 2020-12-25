@@ -1,7 +1,7 @@
 #include <timer.h>
 
 void timer_install() {
-  irq_install_handler(0, &timer_handler);
+  irq_install_handler(IRQ_TIMER, &timer_handler);
 
   uint32_t prescaler = 1193180 / 50;
   outb(PIT_CMD_REGISTER, 0x36);

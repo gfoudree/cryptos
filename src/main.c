@@ -13,6 +13,7 @@
 #include <timer.h>
 #include <mm.h>
 #include <pci.h>
+#include <ata.h>
 
 kernel_data_t kernel_data;
 
@@ -55,6 +56,11 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     __asm__("int $0x80");
 
     pci_enum_bus();
+
+    char buf[2048] = {0};
+    ATA_init();
+    read_sectors_ATA_PIO(&buf, 0x0, 1);
+    printk("Done reading disk");
     for (;;) {
         __asm__ volatile ("nop");
     }
