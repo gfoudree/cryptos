@@ -1,49 +1,40 @@
-#define STATUS_BSY 0x80
-#define STATUS_RDY 0x40
-#define STATUS_DRQ 0x08		// Set when device has data ready to transfer
-#define STATUS_DF 0x20
-#define STATUS_ERR 0x01
-
-#define REG_DATA 0x1F0
-#define REG_SECTOR_COUNT 0x1F2
-#define REG_SECTOR_NUMBER 0x1F3
-#define REG_CYLINDER_LOW 0x1F4
-#define REG_CYLINDER_HIGH 0x1F5
-#define REG_DRIVE 0x1F6
-#define REG_COMMAND 0x1F7
-#define REG_STATUS 0x1F7
-
-#define MASTER_DRIVE 0xA0
-#define SLAVE_DRIVE 0xB0
-
-#define CMD_IDENTIFY 0xEC
-#define CMD_READ 0x20
-#define CMD_WRITE 0x30
-
-#define ATA_IDENTIFY_BUF_SIZE 256
-
 #include <ata.h>
-#include <irq.h>
-#include <types.h>
-#include <screen.h>
-
-static void ATA_wait_BSY();
-static void ATA_wait_DRQ();
 
 void ATA_IRQ_handler(struct regs *r)
 {
 }
 
+void cleanup_ATA_identify_fields(struct ATA_identify *ATA_info) {
+    int i;
+
+    // Swap characters for model
+    for (i = 0; i < 39; i += 2) {
+        char tmp = ATA_info->model[i+1];
+        ATA_info->model[i+1] = ATA_info->model[i];
+        ATA_info->model[i] = tmp; 
+    }
+    ATA_info->model[40] = '\0';
+}
+
 void ATA_init()
 {
     uint16_t ATA_identify_buf[ATA_IDENTIFY_BUF_SIZE] = {0};
+    struct ATA_identify *ATA_info = (struct ATA_identify*)ATA_identify_buf;
 
     irq_install_handler(IRQ_ATA, ATA_IRQ_handler);
 
     if (!ATA_identify(ATA_identify_buf)) {
         printk("Error initializing ATA devices\n");
     }
-    uint32_t sectors_count = ATA_identify_buf[60] | ((uint32_t)ATA_identify_buf[61] << 16);
+    uint32_t drive_size_mb = (ATA_info->sectors_28/2)/1024;
+
+    cleanup_ATA_identify_fields(ATA_info);
+
+    printk("[IDE] Drive ");
+    printk(ATA_info->model);
+    printk(" Size ");
+    k_printdec(drive_size_mb);
+    printk("MB\n");
 }
 
 int ATA_identify(uint16_t *ATA_buf) {
