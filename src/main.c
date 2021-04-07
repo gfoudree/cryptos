@@ -15,7 +15,38 @@
 #include <pci.h>
 #include <ata.h>
 
+#include <fs/ff.h>
+
+#include <fs/diskio.h>
+
 kernel_data_t kernel_data;
+
+FRESULT scan_files (
+    char* path        /* Start node to be scanned (***also used as work area***) */
+)
+{
+    FRESULT res;
+    DIR dir;
+    UINT i;
+    static FILINFO fno;
+
+
+    res = f_opendir(&dir, path);                       /* Open the directory */
+    if (res == FR_OK) {
+        for (;;) {
+            res = f_readdir(&dir, &fno);                   /* Read a directory item */
+            printk(fno.fname);
+            printk("printed\n");
+            if (res != FR_OK || fno.fname[0] == 0) break;
+            
+        }
+        f_closedir(&dir);
+    } else {
+        printk("Error opening directory\n");
+    }
+
+    return res;
+}
 
 void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     kernel_data.mbt = mbt;
@@ -57,9 +88,26 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
 
     pci_enum_bus();
 
-    char buf[2048] = {0};
+    unsigned char buf[2048] = {0};
     ATA_init();
-    read_sectors_ATA_PIO(&buf, 0x0, 1);
+    //read_sectors_ATA_PIO(&buf, 0x0, 1);
+
+    //disk_read(1, &buf, 0, 1);
+    FATFS fs;
+    FRESULT res;
+    char buff[256] = {0};
+
+    res = f_mount(&fs, "", 1);
+    
+    if (res == FR_OK) {
+       
+        strcpy(buff, "/");
+         printk("Mount done\n");
+        res = scan_files(buff);
+    } else {
+        printk("Invalid FS\n");
+    }
+    
     for (;;) {
         __asm__ volatile ("nop");
     }

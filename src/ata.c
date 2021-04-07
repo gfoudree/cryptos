@@ -13,7 +13,7 @@ void cleanup_ATA_identify_fields(struct ATA_identify *ATA_info) {
         ATA_info->model[i+1] = ATA_info->model[i];
         ATA_info->model[i] = tmp; 
     }
-    ATA_info->model[40] = '\0';
+    ATA_info->model[39] = '\0';
 }
 
 void ATA_init()
@@ -74,7 +74,7 @@ int ATA_identify(uint16_t *ATA_buf) {
     return 1;
 }
 
-void read_sectors_ATA_PIO(uint32_t target_address, uint32_t LBA,
+void read_sectors_ATA_PIO(uint32_t *target_address, uint32_t LBA,
 			  uint8_t sector_count)
 {
     ATA_wait_BSY();

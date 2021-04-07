@@ -1,4 +1,5 @@
 *.bin
+disk.img
 *.o
 *.iso
 *~*

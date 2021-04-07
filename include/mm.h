@@ -2,6 +2,7 @@
 #define MM_H
 
 #include <kernel.h>
+#include <libc.h>
 
 #define PAGE_PRESENT 1
 #define PAGE_WRITABLE 2
