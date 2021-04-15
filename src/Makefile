@@ -1,5 +1,5 @@
 CC = clang 
-CFLAGS = -target i386-pc-none-elf -O0 -ffreestanding -nostdlib  -I ../include -Wall -Wno-pointer-sign -Wno-unused-variable -Wno-unused-function -std=c99
+CFLAGS = -target i386-pc-none-elf -O0 -g -ffreestanding -nostdlib  -I ../include -Wall -Wno-pointer-sign -Wno-unused-variable -Wno-unused-function -std=c99
 ASM = nasm
 ASMFLAGS = -f elf
 LDFLAGS = -T link.ld -nostdlib -nostdinc

@@ -79,7 +79,11 @@ void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32
   page_directory_ptr[page_index] = page_entry;
 }
 
-void setup_memory() {
+void setup_memory(multiboot_info_t* mbt) {
+    // Clean out kernel struct
+    memset(&kernel_data, 0, sizeof(kernel_data_t));
+
+    kernel_data.mbt = mbt;
     // Read page table directory pointer from cr3
     uint32_t cr3 = 0;
     __asm__ volatile("movl %%cr3, %0" :"=r"(cr3) : :);

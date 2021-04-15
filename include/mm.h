@@ -1,8 +1,6 @@
 #ifndef MM_H
 #define MM_H
 
-#include <kernel.h>
-
 #define PAGE_PRESENT 1
 #define PAGE_WRITABLE 2
 #define PAGE_USER 4
@@ -12,9 +10,11 @@
 #define PAGE_DIRTY 64
 #define PAGE_4MB 128
 
-extern kernel_data_t kernel_data;
+#include <libc.h>
+#include <kernel.h>
 
-void setup_memory();
+
+void setup_memory(multiboot_info_t* mbt);
 void page_translate(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t p[]);
 void page_translate_noreloc(uint32_t virt, uint32_t phys, uint16_t flags, uint32_t page_directory_ptr[]);
 void *kmalloc(uint32_t sz);

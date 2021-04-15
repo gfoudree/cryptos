@@ -1,4 +1,6 @@
 all:
+	rm -f os.iso
+
 	$(MAKE) -C src
 	$(MAKE) -C isodir/modules
 	

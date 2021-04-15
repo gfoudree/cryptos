@@ -18,7 +18,7 @@ fi
 
 if [ "$1" == "debug" ]
 then
-	qemu-system-i386 -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -s -S 2>/dev/null & 
+	qemu-system-i386 -cdrom os.iso -serial file:com1.out -device rtl8139 -m 1024 -s -S 2>/dev/null &
 	cd src
 	gdb kernel.bin -ex 'target remote localhost:1234'
 else
