@@ -14,6 +14,7 @@
 #include <mm.h>
 #include <pci.h>
 #include <ata.h>
+#include <rtl8139.h>
 
 kernel_data_t kernel_data;
 
@@ -44,20 +45,25 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     printk(" MB of RAM available\nMemory Map:\n");
     print_mmap(mbt);
 
+    pci_enum_bus();
+
+    rtl8139_dev_t rtldev;
+    init_rtl8139(&rtldev);
+    /*
     char *b = kmalloc(25);
     strcpy(b, "Boot complete!\n");
     printk(b);
     kfree(b);
-    pci_enum_bus();
+    */
     __asm__ volatile("sti"); //Enable interrupts
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
 
-    pci_enum_bus();
-
     char buf[2048] = {0};
     ATA_init();
     read_sectors_ATA_PIO(&buf, 0x0, 1);
+
+
     for (;;) {
         __asm__ volatile ("nop");
     }

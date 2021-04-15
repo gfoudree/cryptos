@@ -13,7 +13,7 @@ all : $(TARGET)
 loader.o : loader.asm
 	$(ASM) $(ASMFLAGS) -o $@ $^
 
-$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o kernel.o cmos.o timer.o mm.o pci.o ata.o
+$(TARGET) : loader.o rtl8139.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o kernel.o cmos.o timer.o mm.o pci.o ata.o
 	$(CC) -target i386-pc-none-elf $(LDFLAGS) $^ -o $(TARGET) -g3
 
 clean:

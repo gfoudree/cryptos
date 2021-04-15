@@ -13,7 +13,7 @@ void cleanup_ATA_identify_fields(struct ATA_identify *ATA_info) {
         ATA_info->model[i+1] = ATA_info->model[i];
         ATA_info->model[i] = tmp; 
     }
-    ATA_info->model[40] = '\0';
+    ATA_info->model[39] = '\0';
 }
 
 void ATA_init()
