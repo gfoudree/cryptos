@@ -63,6 +63,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     ATA_init();
     read_sectors_ATA_PIO(&buf, 0x0, 1);
 
+    getmac_rtl8139(&rtldev);
 
     for (;;) {
         __asm__ volatile ("nop");
