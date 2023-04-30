@@ -85,7 +85,7 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
 
-    pci_enum_bus();
+    pci_enum_bus(&kernel_data.pci_devs);
 
     unsigned char buf[2048] = {0};
     ATA_init();

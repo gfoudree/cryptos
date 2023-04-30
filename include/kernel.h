@@ -5,6 +5,7 @@
 #include <screen.h>
 #include "multiboot.h"
 #include <idt.h>
+#include <pci.h>
 
 #define NUM_SYSCALLS 20
 
@@ -28,6 +29,8 @@ typedef struct kernel_data {
   uint32_t uptime; //In seconds
 
   uint32_t *page_directory; // Pointer to page directory table
+
+  pci_dev_t pci_devs[64];
 } kernel_data_t;
 
 extern kernel_data_t kernel_data;
