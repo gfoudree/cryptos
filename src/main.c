@@ -7,7 +7,6 @@
 #include <irq.h>
 #include <isrs.h>
 #include <keyboard.h>
-#include <multiboot.h>
 #include <cmos.h>
 #include <kernel.h>
 #include <timer.h>

@@ -23,7 +23,7 @@ void ATA_init()
 
     irq_install_handler(IRQ_ATA, ATA_IRQ_handler);
 
-    if (!ATA_identify(ATA_identify_buf)) {
+    if (!ATA_identify_devs(ATA_identify_buf)) {
         printk("Error initializing ATA devices\n");
     }
     uint32_t drive_size_mb = (ATA_info->sectors_28/2)/1024;
@@ -37,7 +37,7 @@ void ATA_init()
     printk("MB\n");
 }
 
-int ATA_identify(uint16_t *ATA_buf) {
+int ATA_identify_devs(uint16_t *ATA_buf) {
     ATA_wait_BSY();
     outb(REG_DRIVE, MASTER_DRIVE); // Select master drive
 

@@ -55,7 +55,7 @@ void read_sectors_ATA_PIO(uint32_t *target_address, uint32_t LBA,
                           uint8_t sector_count);
 void write_sectors_ATA_PIO(uint32_t LBA, uint8_t sector_count, uint32_t *bytes);
 void ATA_init();
-int ATA_identify();
+int ATA_identify_devs(uint16_t *ATA_buf);
 static void ATA_wait_BSY();
 static void ATA_wait_DRQ();
 void cleanup_ATA_identify_fields(struct ATA_identify *ATA_info);
