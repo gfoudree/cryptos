@@ -14,7 +14,7 @@ loader.o : loader.asm
 	$(ASM) $(ASMFLAGS) -o $@ $^
 
 
-$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o kernel.o cmos.o timer.o mm.o pci.o ata.o
+$(TARGET) : loader.o main.o screen.o ioports.o gdt.o serial.o libc.o sysctl.o idt.o irq.o isrs.o keyboard.o kernel.o cmos.o timer.o mm.o pci.o ata.o e1000.o
 	$(CC) -target i386-pc-none-elf fs/diskio.c fs/ff.c fs/ffsystem.c $(CFLAGS) $^ -o $(TARGET) -T link.ld
 
 clean:

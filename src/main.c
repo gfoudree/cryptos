@@ -13,6 +13,7 @@
 #include <mm.h>
 #include <pci.h>
 #include <ata.h>
+#include <e1000.h>
 
 #include <fs/ff.h>
 
@@ -85,13 +86,16 @@ void _kmain(multiboot_info_t* mbt, uint32_t heap_base) {
     __asm__("mov $0x80, %eax");
     __asm__("int $0x80");
 
-    pci_enum_bus(&kernel_data.pci_devs);
+    pci_enum_bus(kernel_data.pci_devs);
 
     unsigned char buf[2048] = {0};
     ATA_init();
     //read_sectors_ATA_PIO(&buf, 0x0, 1);
 
     //disk_read(1, &buf, 0, 1);
+
+    e1000_init(kernel_data.pci_devs);
+
     FATFS fs;
     FRESULT res;
     char buff[256] = {0};

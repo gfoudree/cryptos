@@ -120,7 +120,7 @@ inline void ATA_wait_BSY()
 {
     uint8_t status = inb(0x1F7);
     while ((status & STATUS_BSY) == 1) {
-	status = inb(0x1F7);
+	    status = inb(0x1F7);
     }
 }
 
@@ -129,6 +129,6 @@ inline void ATA_wait_DRQ()
 {
     uint8_t status = inb(0x1F7);
     while ((status & STATUS_RDY) == 0) {
-	status = inb(0x1F7);
+	    status = inb(0x1F7);
     }
 }

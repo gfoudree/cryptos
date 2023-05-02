@@ -32,10 +32,10 @@ fi
 
 if [ "$1" == "debug" ]
 then
-	qemu-system-i386 -boot d -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -net nic,model=rtl8139 -s -S 2>/dev/null & 
+	qemu-system-i386 -boot d -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -device e1000,mac=ff:ee:cc:dd:00:11 -s -S 2>/dev/null & 
 	cd src
 	gdb kernel.bin -ex 'target remote localhost:1234'
 else
-	qemu-system-i386 -boot d -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -net nic,model=rtl8139
+	qemu-system-i386 -boot d -cdrom os.iso -serial file:com1.out -m 1024 -hda disk.img -device e1000,mac=ff:ee:cc:dd:00:11
 fi
 #bochs -f bochs.bxrc -q &

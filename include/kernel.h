@@ -8,6 +8,7 @@
 #include <pci.h>
 
 #define NUM_SYSCALLS 20
+#define MAX_PCI_DEVS 64
 
 typedef struct syscall {
   uint8_t syscall;
@@ -30,7 +31,7 @@ typedef struct kernel_data {
 
   uint32_t *page_directory; // Pointer to page directory table
 
-  pci_dev_t pci_devs[64];
+  pci_dev_t pci_devs[MAX_PCI_DEVS];
 } kernel_data_t;
 
 extern kernel_data_t kernel_data;
